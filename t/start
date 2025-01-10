@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# t/start
+
+# Set script to exit on error
+set -e
+
+echo "🚀 Starting services..."
+
+# Start backend server
+echo "🐍 Starting Python backend..."
+cd backend
+source venv/bin/activate
+uvicorn main:app --reload --host 0.0.0.0 --port 8000 & # The & runs it in the background
+
+# Go back to root and start frontend
+echo "⚛️  Starting React frontend..."
+cd ..
+yarn dev
+
+# Note: trap will kill the backend process when the script exits
+trap 'kill $(jobs -p)' EXIT

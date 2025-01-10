@@ -1,0 +1,26 @@
+.confetti-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  perspective: 1000px;
+  pointer-events: none;
+  z-index: 1000000;
+}
+
+.confetti-screen b {
+  display: block;
+  position: absolute;
+  width: 3px;
+  height: 8px;
+  border-radius: 1px;
+}
+
+@media screen and (min-width: 768px) {
+  .confetti-screen b {
+    width: 4px;
+    height: 12px;
+    border-radius: 2px;
+  }
+} 
