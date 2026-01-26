@@ -26,8 +26,15 @@ if [ ! -d "venv" ]; then
     python3 -m venv venv
 fi
 
+# Detect OS and set correct venv paths (Windows uses Scripts/, Unix uses bin/)
+if [ -d "venv/Scripts" ]; then
+    VENV_ACTIVATE="venv/Scripts/activate"
+else
+    VENV_ACTIVATE="venv/bin/activate"
+fi
+
 # Activate virtual environment and install dependencies
-source venv/bin/activate
+source "$VENV_ACTIVATE"
 python3 -m pip install fastapi uvicorn
 
 # Deactivate virtual environment
