@@ -95,15 +95,14 @@ def run(argv, cwd=None):
 
 
 def spawn(argv, cwd=None):
-    """Start a server, isolated so that Ctrl+C comes to us and not to it.
+    """Start a server.
 
-    We want to shut the two servers down in a defined order, so we take the
-    interrupt ourselves and then kill them in stop().
+    On POSIX the child gets its own session, so Ctrl+C comes to us alone and we
+    can shut the two servers down in a defined order. Windows has no equivalent
+    - every process on the console gets Ctrl+C at once - so there we just let
+    that happen and have stop() clean up whatever is left.
     """
-    if IS_WINDOWS:
-        kwargs = {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP}
-    else:
-        kwargs = {"start_new_session": True}
+    kwargs = {} if IS_WINDOWS else {"start_new_session": True}
     return subprocess.Popen(argv, cwd=cwd or REPO_ROOT, **kwargs)
 
 
@@ -136,6 +135,14 @@ def stop(process):
         process.kill()
 
 
+_interrupted = []
+
+
+def interrupted():
+    """True once Ctrl+C (or a SIGTERM) has been seen."""
+    return bool(_interrupted)
+
+
 def handle_signals():
     """Make Ctrl+C and `kill` both raise KeyboardInterrupt.
 
@@ -144,6 +151,11 @@ def handle_signals():
     all - leaving a script that Ctrl+C cannot stop with two servers under it.
     """
     def interrupt(_signum, _frame):
+        # Recorded as well as raised, because on Windows the servers get Ctrl+C
+        # at the same time we do, and the caller needs to distinguish "shutting
+        # down" from "a server crashed". A list because .append is atomic and
+        # this runs in a signal handler.
+        _interrupted.append(True)
         raise KeyboardInterrupt
 
     signal.signal(signal.SIGINT, interrupt)

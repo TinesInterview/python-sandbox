@@ -44,9 +44,14 @@ try:
 
     # If either service falls over on its own, stop the other too: a
     # half-running sandbox is more confusing than a stopped one.
+    #
+    # On Windows the servers share our console, so Ctrl+C reaches them at the
+    # same moment it reaches us - and a child can be seen dead here just before
+    # our own KeyboardInterrupt arrives. lib.interrupted() tells the two apart,
+    # so a normal Ctrl+C is never reported as a crash.
     while True:
         for name, process in (("backend", backend), ("frontend", frontend)):
-            if process.poll() is not None:
+            if process.poll() is not None and not lib.interrupted():
                 lib.log("\n🛑 The {0} stopped (exit code {1}).".format(
                     name, process.returncode))
                 code = process.returncode or 1
@@ -54,6 +59,10 @@ try:
         time.sleep(0.4)
 
 except (KeyboardInterrupt, SystemExit):
+    # KeyboardInterrupt is a clean stop, so `code` stays 0. On Windows the
+    # servers share our console and get Ctrl+C at the same moment we do; on
+    # POSIX they are shielded and only we get it. Either way, stop() below
+    # cleans up whatever is still running.
     pass
 
 finally:
