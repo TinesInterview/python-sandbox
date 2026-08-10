@@ -42,6 +42,6 @@ if python is None:
 
 lib.log("📦 Installing backend dependencies...")
 lib.run([python, "-m", "pip", "install", "--upgrade", "pip", "--quiet"])
-lib.run([python, "-m", "pip", "install", "-r", lib.REQUIREMENTS])
+lib.run([python, "-m", "pip", "install", "fastapi", "uvicorn"])
 
 lib.log("✅ Setup complete!\n\n   Next: " + lib.START_HINT + "\n")

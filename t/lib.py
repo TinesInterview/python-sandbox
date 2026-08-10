@@ -14,7 +14,6 @@ IS_WINDOWS = os.name == "nt"
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BACKEND_DIR = os.path.join(REPO_ROOT, "backend")
 VENV_DIR = os.path.join(BACKEND_DIR, "venv")
-REQUIREMENTS = os.path.join(BACKEND_DIR, "requirements.txt")
 
 # Windows consoles default to a code page that cannot encode emoji, which would
 # turn a decorative print into a crash.
