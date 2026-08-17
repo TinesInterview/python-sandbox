@@ -1,0 +1,16 @@
+# Normalise line endings.
+#
+# The t/ scripts are also runnable from bash (Git Bash / WSL / macOS / Linux),
+# and bash chokes on CRLF ("$'\r': command not found"). Forcing LF in the
+# working tree - even on Windows - keeps them runnable everywhere.
+* text=auto eol=lf
+
+# cmd.exe is only reliable with CRLF batch files.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+*.ico binary
+*.png binary
+*.jpg binary
+*.pem binary
